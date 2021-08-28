@@ -1,0 +1,14 @@
+#!/bin/bash -l
+
+set -e
+set -a
+
+source /home/deploy/.bashrc
+
+cd /home/deploy/gateway/
+
+touch /home/deploy/gateway/log/production.log
+
+./deploy/restart
+
+tail -f /home/deploy/gateway/log/production.log

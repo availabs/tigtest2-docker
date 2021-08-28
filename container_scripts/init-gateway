@@ -1,0 +1,148 @@
+#!/bin/bash -l
+
+# This script will
+#
+#  1. Install all the app dependencies.
+#     These are installed in ~/.rvm, ~/.bundle, ~/.gem.
+#
+#  2. Configure the app.
+#     Configuation will happen in the mounted ~/gateway/ directory
+#
+#  3. Keep the container running so we can copy the installed
+#     dependencies from the container to the host so that we can
+#     stop and restart the app without having to reinstall dependencies.
+
+set -e
+set -a
+
+cd /home/deploy/gateway/
+
+mkdir -p tmp/pids/
+mkdir -p tmp/sockets/
+
+bundle update bootstrap3-datetimepicker-rails
+bundle install --without test development --full-index
+
+SECRET="$( rake secret | tail -n1 )"
+
+# If the application.yml file does not already exist, configure it using ENV variables.
+if [ ! -f /config/application.yml ];
+then
+  cp config/application.yml.template config/application.yml
+
+  # PostgreSQL credentials must be in the .env file
+  sed -i "
+    s/^SECRET_KEY_BASE:.*/SECRET_KEY_BASE: \"${SECRET}\"/;
+    s/DB_SCHEMA:.*/DB_SCHEMA: ${PGDATABASE}/;
+    s/DB_USER_NAME:.*/DB_USER_NAME: ${PGUSER}/;
+    s/DB_PASSWORD:.*/DB_PASSWORD: ${PGPASSWORD}/;
+    s/DB_HOST:.*/DB_HOST: ${PGHOST}/;
+    s/DB_PORT:.*/DB_PORT: ${PGPORT}/;
+    s/DB_POOL_SIZE:.*/DB_POOL_SIZE: ${DB_POOL_SIZE}/;" \
+    config/application.yml
+
+  # The following config ENV variables are optional.
+  if [[ -v "$GATEWAY_ADMIN_EMAIL" ]];
+  then
+    sed -i \
+      "s/^ADMIN_EMAIL.*/ADMIN_EMAIL: ${GATEWAY_ADMIN_EMAIL}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_ADMIN_NAME" ]];
+  then
+    sed -i \
+      "s/^ADMIN_NAME.*/ADMIN_NAME: ${GATEWAY_ADMIN_NAME}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_ADMIN_PASSWORD" ]];
+  then
+    sed -i \
+      "s/^ADMIN_PASSWORD.*/ADMIN_PASSWORD: ${GATEWAY_ADMIN_PASSWORD}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_APP_NAME" ]];
+  then
+    sed -i \
+      "s/^APP_NAME.*/APP_NAME: ${GATEWAY_APP_NAME}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_DISABLE_IP_SPOOFING_CHECK" ]];
+  then
+    sed -i \
+      "s/^DISABLE_IP_SPOOFING_CHECK.*/DISABLE_IP_SPOOFING_CHECK: ${GATEWAY_DISABLE_IP_SPOOFING_CHECK}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_GATEWAY_VERSION" ]];
+  then
+    sed -i \
+      "s/^GATEWAY_VERSION.*/GATEWAY_VERSION: ${GATEWAY_GATEWAY_VERSION}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_HOST" ]];
+  then
+    sed -i \
+      "s/^HOST.*/HOST: ${GATEWAY_HOST}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_LOG_LEVEL" ]];
+  then
+    sed -i \
+      "s/^LOG_LEVEL.*/LOG_LEVEL: ${GATEWAY_LOG_LEVEL}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_MAX_THREADS" ]];
+  then
+    sed -i \
+      "s/^MAX_THREADS.*/MAX_THREADS: ${GATEWAY_MAX_THREADS}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_MIN_THREADS" ]];
+  then
+    sed -i \
+      "s/^MIN_THREADS.*/MIN_THREADS: ${GATEWAY_MIN_THREADS}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_PUMA_WORKERS" ]];
+  then
+    sed -i \
+      "s/^PUMA_WORKERS.*/PUMA_WORKERS: ${GATEWAY_PUMA_WORKERS}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_RESTART_THRESHOLD" ]];
+  then
+    sed -i \
+      "s/^RESTART_THRESHOLD.*/RESTART_THRESHOLD: ${GATEWAY_RESTART_THRESHOLD}" \
+      config/application.yml
+  fi
+
+  if [[ -v "$GATEWAY_ROLES" ]];
+  then
+    sed -i \
+      "s/^ROLES.*/ROLES: ${GATEWAY_ROLES}" \
+      config/application.yml
+  fi
+
+fi
+
+rake assets:precompile
+
+bundle exec puma -C config/puma.rb
+
+# Used to keep the docker container running while we copy the directories
+#  containing the app dependencies from the container to the host.
+
+# Copy the dependencies files to the host
+cp -r /home/deploy/.rvm/* /home/deploy/.rvm.host
+cp -r /home/deploy/.gem/* /home/deploy/.gem.host
+cp -r /home/deploy/.bundle/* /home/deploy/.bundle.host

@@ -1,0 +1,25 @@
+#!/bin/bash -l
+
+# This script will
+#
+#  1. Clone the gateway repository into a mounted directory in the host.
+#     The reason this is done in the container is because it is easier
+#     to put the GitHub deployment tokens into the running container than to
+#     create deployment tokens for each host machine.
+#
+#  2. Checkout the repository version corresponding to the Docker image.
+
+set -e
+set -a
+
+source /home/deploy/.bashrc
+
+# Use Docker's -v flag to mount the .ssh directory so that
+#   /home/deploy/.ssh contains the keys for a availabs/tigtest2 deployment token
+# ssh-agent bash -c 'ssh-add /home/deploy/.ssh/id_rsa; git clone git@github.com:availabs/tigtest2.git gateway'
+git clone git@github.com:availabs/tigtest2.git gateway
+
+cd /home/deploy/gateway/
+
+# GATEWAY_GIT_HASH must be set in the .env file
+git checkout "$GATEWAY_GIT_HASH"

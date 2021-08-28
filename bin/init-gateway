@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
+
+mkdir -p ./mount_dirs/gateway/
+mkdir -p ./mount_dirs/.rvm/
+mkdir -p ./mount_dirs/.gem/
+mkdir -p ./mount_dirs/.bundle/
+
+echo 'FOO'
+
+sudo docker \
+  run \
+    --rm \
+    --env-file "$PWD/config/.env" \
+    -v "$PWD/config/.ssh":/home/deploy/.ssh \
+    -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
+    -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm.host \
+    -v "$PWD/mount_dirs/.gem":/home/deploy/.gem.host \
+    -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle.host \
+    ptomchik/nymtc_tig:v0.0.1 \
+    ./init-gateway
+
+popd >/dev/null
