@@ -1,0 +1,72 @@
+# NYMTC TIG In Docker
+
+## Build the Docker image
+
+```sh
+sudo docker build -t ptomchik/nymtc_tig:v0.0.1 .
+```
+
+## .env file
+
+Create a .env file using the .env.template
+
+```sh
+$ cat .env.template
+GATEWAY_GIT_HASH=
+
+RAILS_ENV=production
+RACK_ENV=production
+
+DB_POOL_SIZE=5
+
+PGUSER=
+PGPASSWORD=
+PGHOST=
+PGPORT=
+PGDATABASE=
+```
+
+## Clone the project
+
+```sh
+mkdir -p gateway
+
+sudo docker \
+  run \
+    --env-file .env \
+    -v "$PWD/.ssh:/home/deploy/.ssh" \
+    -v "$PWD/gateway:/home/deploy/gateway" \
+    ptomchik/nymtc_tig:v0.0.1 \
+    ./get-gateway
+```
+
+# Install the Ruby and the packages and copy them to host for reuse.
+
+```sh
+sudo docker \
+  run \
+    --env-file .env \
+    -v "$PWD/.ssh:/home/deploy/.ssh" \
+    -v "$PWD/gateway:/home/deploy/gateway" \
+    -v "$PWD/.rvm:/home/deploy/.rvm.host" \
+    -v "$PWD/.gem:/home/deploy/.gem.host" \
+    -v "$PWD/.bundle:/home/deploy/.bundle.host" \
+    ptomchik/nymtc_tig:v0.0.1 \
+    ./init-gateway
+```
+
+## Launch the server
+
+```sh
+sudo docker \
+  run \
+    -d \
+    --log-driver none \
+    --env-file .env \
+    -v "$PWD/tigtest2:/home/deploy/gateway" \
+    -v "$PWD/.bundle":/home/deploy/.bundle \
+    -v "$PWD/.gem":/home/deploy/.gem \
+    -v "$PWD/.rvm":/home/deploy/.rvm \
+    ptomchik/nymtc_tig:v0.0.1 \
+    ./deploy-gateway
+```
