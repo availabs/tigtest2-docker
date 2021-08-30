@@ -82,6 +82,8 @@ RUN /bin/bash -l -c "rvm install 2.2.0"
 RUN /bin/bash -l -c "rvm --force rubygems 2.7.7"
 RUN /bin/bash -l -c "gem install bundler -v 1.17.3"
 
+RUN mkdir -p /home/deploy/.ssh
+
 COPY ./container_scripts/get-gateway /home/deploy/get-gateway
 COPY ./container_scripts/init-gateway /home/deploy/init-gateway
 COPY ./container_scripts/deploy-gateway /home/deploy/deploy-gateway
