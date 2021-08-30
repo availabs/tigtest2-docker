@@ -7,10 +7,6 @@
 #
 #  2. Configure the app.
 #     Configuation will happen in the mounted ~/gateway/ directory
-#
-#  3. Keep the container running so we can copy the installed
-#     dependencies from the container to the host so that we can
-#     stop and restart the app without having to reinstall dependencies.
 
 set -e
 set -a

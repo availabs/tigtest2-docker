@@ -7,8 +7,8 @@ source /home/deploy/.bashrc
 
 cd /home/deploy/gateway/
 
-touch /home/deploy/gateway/log/production.log
+touch "/home/deploy/gateway/log/$RAILS_ENV.log"
 
 ./deploy/restart
 
-tail -f /home/deploy/gateway/log/production.log
+tail -f "/home/deploy/gateway/log/$RAILS_ENV.log"

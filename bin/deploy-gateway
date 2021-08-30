@@ -4,6 +4,9 @@ set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
+# NOTE: the app dependency directories are in host-mounted directories
+#       for reuse between app deployments.
+# NOTE: Docker logging turned off because log is just tail -f of "/home/deploy/gateway/log/$RAILS_ENV.log"
 sudo docker \
   run \
     -d \

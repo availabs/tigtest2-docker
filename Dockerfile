@@ -19,6 +19,7 @@ RUN apt-get -y install \
     gpg \
     libpq-dev \
     software-properties-common \
+    ssh \
     tzdata
 
 # Configure the TimeZone data
