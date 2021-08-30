@@ -10,7 +10,7 @@ mkdir -p ./mount_dirs/gateway
 sudo docker \
   run \
     --env-file "$PWD/config/.env" \
-    -v "$PWD/config/.ssh:/home/deploy/.ssh" \
+    -v "$PWD/config/id_rsa:/home/deploy/.ssh/id_rsa" \
     -v "$PWD/mount_dirs/gateway:/home/deploy/gateway" \
     ptomchik/nymtc_tig:v0.0.1 \
     ./get-gateway
