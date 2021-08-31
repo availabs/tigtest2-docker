@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# NOTE: On the host maching config/.ssh/ MUST contain a GitHub deploy key
+#       See: https://github.com/availabs/tigtest2/settings/keys
+#
+# NOTE: We mount host directories into which the container copies the app dependencies.
+#       There may be permission troubles if the UID of the host user does not
+#         match the UID of the of the deploy user in the Docker image.
+#         Therefore, we grant universal permissions to the mounted directories.
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
+
+source ./config/.env
+
+if [ ! -d ./mount_dirs/gateway/ ];
+then
+  ./bin/get-getway
+fi
+
+# Clean the dependencies dirs
+sudo rm -rf ./mount_dirs/.rvm/
+mkdir -p ./mount_dirs/.rvm/
+chmod -R a+rwx ./mount_dirs/.rvm/
+
+sudo rm -rf ./mount_dirs/.gem/
+mkdir -p ./mount_dirs/.gem/
+chmod -R a+rwx ./mount_dirs/.gem/
+
+sudo rm -rf ./mount_dirs/.bundle/
+mkdir -p ./mount_dirs/.bundle/
+chmod -R a+rwx ./mount_dirs/.bundle/
+
+sudo docker \
+  run \
+    --rm \
+    --env-file "$PWD/config/.env" \
+    -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
+    -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm.host \
+    -v "$PWD/mount_dirs/.gem":/home/deploy/.gem.host \
+    -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle.host \
+    "$GATEWAY_DOCKER_IMG" \
+    ./install-dependencies
+
+popd >/dev/null

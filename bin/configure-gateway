@@ -14,34 +14,22 @@ pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
 source ./config/.env
 
-if [ ! -d ./mount_dirs/gateway/ ];
+# If the PGHOST is a UNIX socket, we need to mount the socket
+if [[ "$PGHOST" == '/'* ]];
 then
-  ./bin/get-getway
+  PGHOST_SOCKET="$PGHOST"
 fi
-
-# Clean the dependencies dirs
-sudo rm -rf ./mount_dirs/.rvm/
-mkdir -p ./mount_dirs/.rvm/
-chmod -R a+rwx ./mount_dirs/.rvm/
-
-sudo rm -rf ./mount_dirs/.gem/
-mkdir -p ./mount_dirs/.gem/
-chmod -R a+rwx ./mount_dirs/.gem/
-
-sudo rm -rf ./mount_dirs/.bundle/
-mkdir -p ./mount_dirs/.bundle/
-chmod -R a+rwx ./mount_dirs/.bundle/
 
 sudo docker \
   run \
     --rm \
     --env-file "$PWD/config/.env" \
-    -v "$PWD/config/.ssh/id_rsa":/home/deploy/.ssh/id_rsa \
+    -v "$PGHOST_SOCKET":"$PGHOST_SOCKET" \
     -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
-    -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm.host \
-    -v "$PWD/mount_dirs/.gem":/home/deploy/.gem.host \
-    -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle.host \
+    -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \
+    -v "$PWD/mount_dirs/.gem":/home/deploy/.gem \
+    -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     "$GATEWAY_DOCKER_IMG" \
-    ./init-gateway
+    ./configure-gateway
 
 popd >/dev/null

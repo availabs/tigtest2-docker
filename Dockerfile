@@ -85,5 +85,6 @@ RUN /bin/bash -l -c "gem install bundler -v 1.17.3"
 RUN mkdir -p /home/deploy/.ssh
 
 COPY ./container_scripts/get-gateway /home/deploy/get-gateway
-COPY ./container_scripts/init-gateway /home/deploy/init-gateway
+COPY ./container_scripts/install-dependencies /home/deploy/install-dependencies
+COPY ./container_scripts/configure-gateway /home/deploy/configure-gateway
 COPY ./container_scripts/deploy-gateway /home/deploy/deploy-gateway
