@@ -6,6 +6,7 @@ set -e
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
 mkdir -p ./mount_dirs/gateway
+chmod -R a+rwx ./mount_dirs/gateway
 
 sudo docker \
   run \

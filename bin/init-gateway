@@ -19,8 +19,13 @@ rm -rf ./mount_dirs/.gem/
 rm -rf ./mount_dirs/.bundle/
 
 mkdir -p ./mount_dirs/.rvm/
+chmod -R a+rwx ./mount_dirs/.rvm/
+
 mkdir -p ./mount_dirs/.gem/
+chmod -R a+rwx ./mount_dirs/.gem/
+
 mkdir -p ./mount_dirs/.bundle/
+chmod -R a+rwx ./mount_dirs/.bundle/
 
 sudo docker \
   run \
