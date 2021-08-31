@@ -32,7 +32,7 @@ then
     s/DB_SCHEMA:.*/DB_SCHEMA: ${PGDATABASE}/;
     s/DB_USER_NAME:.*/DB_USER_NAME: ${PGUSER}/;
     s/DB_PASSWORD:.*/DB_PASSWORD: ${PGPASSWORD}/;
-    s/DB_HOST:.*/DB_HOST: ${PGHOST}/;
+    s|DB_HOST:.*|DB_HOST: ${PGHOST}|;
     s/DB_PORT:.*/DB_PORT: ${PGPORT}/;
     s/DB_POOL_SIZE:.*/DB_POOL_SIZE: ${DB_POOL_SIZE}/;" \
     config/application.yml
