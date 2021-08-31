@@ -12,6 +12,8 @@ set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
+source ./config/.env
+
 if [ ! -d ./mount_dirs/gateway/ ];
 then
   ./bin/get-getway
@@ -39,7 +41,7 @@ sudo docker \
     -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm.host \
     -v "$PWD/mount_dirs/.gem":/home/deploy/.gem.host \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle.host \
-    ptomchik/nymtc_tig:v0.0.1 \
+    "$GATEWAY_DOCKER_IMG" \
     ./init-gateway
 
 popd >/dev/null

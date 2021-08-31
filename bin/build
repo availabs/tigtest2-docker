@@ -4,6 +4,8 @@ set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
-sudo docker build -t ptomchik/nymtc_tig:v0.0.1 .
+source config/.env
+
+sudo docker build -t "$GATEWAY_DOCKER_IMG" .
 
 popd >/dev/null

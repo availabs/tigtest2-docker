@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# NOTE: app dependency dirs are in host-mounted dirs for reuse between app deployments.
+# NOTE: Docker logging is disabled because the log would be identical to the gateway log file.
+
 set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
@@ -12,9 +15,6 @@ then
   PGHOST_SOCKET="$PGHOST"
 fi
 
-# NOTE: the app dependency directories are in host-mounted directories
-#       for reuse between app deployments.
-# NOTE: Docker logging turned off because log is just tail -f of "/home/deploy/gateway/log/$RAILS_ENV.log"
 sudo docker \
   run \
     -d \
@@ -26,7 +26,7 @@ sudo docker \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     -v "$PWD/mount_dirs/.gem":/home/deploy/.gem \
     -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \
-    ptomchik/nymtc_tig:v0.0.1 \
+    "$GATEWAY_DOCKER_IMG" \
     ./deploy-gateway
 
 popd >/dev/null

@@ -6,6 +6,8 @@ set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
+source ./config/.env
+
 if [ -z "$GATEWAY_HOST_PORT" ];
 then
   >&2 echo "ERROR: GATEWAY_HOST_PORT is a required ENV variable."

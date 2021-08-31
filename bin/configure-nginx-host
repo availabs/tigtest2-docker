@@ -6,12 +6,15 @@ set -e
 if [ ! -d /etc/nginx ];
 then
   >&2 echo "ERROR: NGINX does not appear to have been installed on the host system."
+  >&2 echo "  Please run the following command:"
+  >&2 echo "    sudo apt-get install nginx"
   exit 1
 fi
 
 if [ -f /etc/nginx/sites-available/tig.conf ];
 then
   >&2 echo "ERROR: /etc/nginx/sites-available/tig.conf already exists."
+  >&2 echo "  Please remove or rename the file before proceeding."
   exit 1
 fi
 
@@ -19,7 +22,7 @@ if [ -z "$1" ];
 then
   >&2 echo "ERROR: The path to the nginx.host.<protocol>.template.conf file is required."
   >&2 echo
-  >&2 echo "  USAGE Example: ./bin/start-nginx-host ./config/nginx.host.https.template.conf"
+  >&2 echo "  USAGE Example: ./bin/start-nginx-host ./config/nginx.https.template.conf"
   exit 1
 fi
 
@@ -35,15 +38,15 @@ pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
 source ./config/.env
 
-if [ -z "$GATEWAY_SERVER_NAME" ];
+if [ -z "$GATEWAY_HOST" ];
 then
-  >&2 echo "ERROR: The GATEWAY_SERVER_NAME variable must be set in config/.env"
+  >&2 echo "ERROR: The GATEWAY_HOST variable must be set in config/.env"
   exit 1
 fi
 
 sudo sed "
   s|__GATEWAY_REPO_PATH__|$PWD|g;
-  s|__GATEWAY_SERVER_NAME__|$GATEWAY_SERVER_NAME|g;
+  s|__GATEWAY_SERVER_NAME__|$GATEWAY_HOST|g;
 " "$NGINX_TEMPLATE_FILE" \
   > /etc/nginx/sites-available/tig.conf
 
