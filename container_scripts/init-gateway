@@ -2,11 +2,22 @@
 
 # This script will
 #
+#  0. The Docker container must be created with --env-file config/.env
+#
 #  1. Install all the app dependencies.
 #     These are installed in ~/.rvm, ~/.bundle, ~/.gem.
 #
 #  2. Configure the app.
 #     Configuation will happen in the mounted ~/gateway/ directory
+#
+#  NOTE: In the sed replacements below, a "/" character in a variable value will break the sed command.
+#        Because the DB_HOST may contain a "/" if it is a UNIX socket, the sed delimiter is "|".
+#        To accomodate any pritnable character in a password, we could use a non-printable character
+#          for the sed delimiter. For example:
+#
+#            $ sed s$'\001'foo$'\001'bar$'\001'g <<< 'foobar'
+#            barbar
+#
 
 set -e
 set -a
@@ -21,6 +32,15 @@ bundle install --without test development --full-index
 
 SECRET="$( rake secret | tail -n1 )"
 
+# The following are used to accomodate any characters in the passwords.
+#   See: https://stackoverflow.com/a/29613573/3970755
+quoteRe() { sed -e 's/[^^]/[&]/g; s/\^/\\^/g; $!a\'$'\n''\\n' <<<"$1" | tr -d '\n'; }
+
+quoteSubst() {
+  IFS= read -d '' -r < <(sed -e ':a' -e '$!{N;ba' -e '}' -e 's/[&/\]/\\&/g; s/\n/\\&/g' <<<"$1")
+  printf %s "${REPLY%$'\n'}"
+}
+
 # If the application.yml file does not already exist, configure it using ENV variables.
 if [ ! -f /config/application.yml ];
 then
@@ -31,8 +51,8 @@ then
     s/^SECRET_KEY_BASE:.*/SECRET_KEY_BASE: \"${SECRET}\"/;
     s/DB_SCHEMA:.*/DB_SCHEMA: ${PGDATABASE}/;
     s/DB_USER_NAME:.*/DB_USER_NAME: ${PGUSER}/;
-    s/DB_PASSWORD:.*/DB_PASSWORD: ${PGPASSWORD}/;
-    s|DB_HOST:.*|DB_HOST: ${PGHOST}|;
+    s/DB_HOST:.*/DB_HOST: $( quoteSubst "${PGHOST}" )/;
+    s/DB_PASSWORD:.*/DB_PASSWORD: $( quoteSubst "${PGPASSWORD} )/; \
     s/DB_PORT:.*/DB_PORT: ${PGPORT}/;
     s/DB_POOL_SIZE:.*/DB_POOL_SIZE: ${DB_POOL_SIZE}/;" \
     config/application.yml
@@ -41,28 +61,34 @@ then
   if [[ -v "$GATEWAY_ADMIN_EMAIL" ]];
   then
     sed -i \
-      "s/^ADMIN_EMAIL.*/ADMIN_EMAIL: ${GATEWAY_ADMIN_EMAIL}" \
+      "s/^ADMIN_EMAIL.*/ADMIN_EMAIL: $( quoteSubst "${GATEWAY_ADMIN_EMAIL}" )/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_ADMIN_NAME" ]];
   then
     sed -i \
-      "s/^ADMIN_NAME.*/ADMIN_NAME: ${GATEWAY_ADMIN_NAME}" \
+      "s/^ADMIN_NAME.*/ADMIN_NAME: ${GATEWAY_ADMIN_NAME}"/ \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_ADMIN_PASSWORD" ]];
   then
+    # Allow any printable characters in the GATEWAY_ADMIN_PASSWORD.
+    #   See: https://stackoverflow.com/a/4844945/3970755
     sed -i \
-      "s/^ADMIN_PASSWORD.*/ADMIN_PASSWORD: ${GATEWAY_ADMIN_PASSWORD}" \
+      s$'\001'^.*$'\001'"ADMIN_PASSWORD: ${GATEWAY_ADMIN_PASSWORD}"$'\001'g \
       config/application.yml
-  fi
+
+    sed -i \
+      "s/^ADMIN_PASSWORD.*/ADMIN_PASSWORD: $( quoteSubst "${GATEWAY_ADMIN_NAME}" )/" \
+      config/application.yml
+    fi
 
   if [[ -v "$GATEWAY_APP_NAME" ]];
   then
     sed -i \
-      "s/^APP_NAME.*/APP_NAME: ${GATEWAY_APP_NAME}" \
+      "s/^APP_NAME.*/APP_NAME: $( quoteSubst "${GATEWAY_APP_NAME}" )/" \
       config/application.yml
   fi
 
@@ -76,56 +102,56 @@ then
   if [[ -v "$GATEWAY_GATEWAY_VERSION" ]];
   then
     sed -i \
-      "s/^GATEWAY_VERSION.*/GATEWAY_VERSION: ${GATEWAY_GATEWAY_VERSION}" \
+      "s/^GATEWAY_VERSION.*/GATEWAY_VERSION: ${GATEWAY_GATEWAY_VERSION}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_HOST" ]];
   then
     sed -i \
-      "s/^HOST.*/HOST: ${GATEWAY_HOST}" \
+      "s/^HOST.*/HOST: ${GATEWAY_HOST}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_LOG_LEVEL" ]];
   then
     sed -i \
-      "s/^LOG_LEVEL.*/LOG_LEVEL: ${GATEWAY_LOG_LEVEL}" \
+      "s/^LOG_LEVEL.*/LOG_LEVEL: ${GATEWAY_LOG_LEVEL}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_MAX_THREADS" ]];
   then
     sed -i \
-      "s/^MAX_THREADS.*/MAX_THREADS: ${GATEWAY_MAX_THREADS}" \
+      "s/^MAX_THREADS.*/MAX_THREADS: ${GATEWAY_MAX_THREADS}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_MIN_THREADS" ]];
   then
     sed -i \
-      "s/^MIN_THREADS.*/MIN_THREADS: ${GATEWAY_MIN_THREADS}" \
+      "s/^MIN_THREADS.*/MIN_THREADS: ${GATEWAY_MIN_THREADS}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_PUMA_WORKERS" ]];
   then
     sed -i \
-      "s/^PUMA_WORKERS.*/PUMA_WORKERS: ${GATEWAY_PUMA_WORKERS}" \
+      "s/^PUMA_WORKERS.*/PUMA_WORKERS: ${GATEWAY_PUMA_WORKERS}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_RESTART_THRESHOLD" ]];
   then
     sed -i \
-      "s/^RESTART_THRESHOLD.*/RESTART_THRESHOLD: ${GATEWAY_RESTART_THRESHOLD}" \
+      "s/^RESTART_THRESHOLD.*/RESTART_THRESHOLD: ${GATEWAY_RESTART_THRESHOLD}/" \
       config/application.yml
   fi
 
   if [[ -v "$GATEWAY_ROLES" ]];
   then
     sed -i \
-      "s/^ROLES.*/ROLES: ${GATEWAY_ROLES}" \
+      "s/^ROLES.*/ROLES: ${GATEWAY_ROLES}/" \
       config/application.yml
   fi
 
