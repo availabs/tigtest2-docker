@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+if [ ! -f /etc/nginx/sites-available/tig.conf ];
+then
+  >&2 echo "ERROR: /etc/nginx/sites-available/tig.conf does not exist."
+  >&2 echo "       Did you run ./bin/configure-nginx-host ?"
+  exit 1
+fi
+
+sudo nginx -t && sudo service nginx reload

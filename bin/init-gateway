@@ -4,6 +4,9 @@
 #       See: https://github.com/availabs/tigtest2/settings/keys
 #
 # NOTE: We mount host directories into which the container copies the app dependencies.
+#       There may be permission troubles if the UID of the host user does not
+#         match the UID of the of the deploy user in the Docker image.
+#         Therefore, we grant universal permissions to the mounted directories.
 
 set -e
 

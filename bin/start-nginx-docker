@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOTE: Running NGINX in Docker is primarily for development purposes.
+
 set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
