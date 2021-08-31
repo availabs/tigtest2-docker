@@ -4,6 +4,14 @@ set -e
 
 pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
 
+source ./config/.env
+
+# If the PGHOST is a UNIX socket, we need to mount the socket
+if [[ "$PGHOST" == '/'* ]];
+then
+  PGHOST_SOCKET="$PGHOST"
+fi
+
 # NOTE: the app dependency directories are in host-mounted directories
 #       for reuse between app deployments.
 # NOTE: Docker logging turned off because log is just tail -f of "/home/deploy/gateway/log/$RAILS_ENV.log"
@@ -13,6 +21,7 @@ sudo docker \
     --rm \
     --log-driver none \
     --env-file ./config/.env \
+    -v "$PGHOST_SOCKET":"$PGHOST_SOCKET" \
     -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     -v "$PWD/mount_dirs/.gem":/home/deploy/.gem \
