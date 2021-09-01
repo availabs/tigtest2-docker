@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 
+# DO NOT COPY the gateway codebase into the Docker image.
+
 # Ubuntu 18.04 is required to install Ruby 2.2.0
 #   because of dependency on libssl1.0-dev
 

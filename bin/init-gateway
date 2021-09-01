@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" > /dev/null
+
+./get-getway
+./install-dependencies
+./configure-gateway
+
+popd >/dev/null

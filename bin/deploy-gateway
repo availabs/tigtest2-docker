@@ -17,6 +17,7 @@ fi
 
 sudo docker \
   run \
+    --name nymtc_tig_gateway \
     -d \
     --rm \
     --log-driver none \

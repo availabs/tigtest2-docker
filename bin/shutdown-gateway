@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+sudo docker stop nymtc_tig_gateway
