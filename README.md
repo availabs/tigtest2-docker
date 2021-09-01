@@ -100,7 +100,9 @@ and run
 
 ### Guarding Secrets
 
-This repository is public. It is therefore critical to protect any secrets.
+This repository and the Docker image it creates are public.
+The TIG gateway repository is not.
+It is therefore critical to keep the gateway repository out of the docker image.
 
 Files containing secrets MUST only be added to the _config/_ directory.
 
