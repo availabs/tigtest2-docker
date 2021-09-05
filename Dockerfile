@@ -34,7 +34,7 @@ RUN apt-get -y install \
    libgeos-dev \
    libproj-dev
 
-# Install the Ruby 2.0.0 dependencies so deploy user won't need sudo.
+# Install the Ruby 2.4.10 dependencies so deploy user won't need sudo.
 RUN \
   apt-get -y install \
     autoconf \
@@ -50,7 +50,7 @@ RUN \
     libncurses5-dev \
     libreadline-dev \
     libsqlite3-dev \
-    libssl1.0-dev \
+    libssl-dev \
     libtool \
     libyaml-dev \
     make \
@@ -78,10 +78,11 @@ RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
 RUN curl -sSL https://get.rvm.io | bash -s stable
 
 # Note: '/bin/bash -l -c' makes available rvm modifcations to ~/.bashrc
-RUN /bin/bash -l -c "rvm install 2.2.0"
-RUN /bin/bash -l -c "rvm --force rubygems 2.7.7"
-RUN /bin/bash -l -c "gem install bundler -v 1.17.3"
+# RUN /bin/bash -l -c "rvm install 2.3.8"
+RUN /bin/bash -l -c "rvm install 2.5.8"
+RUN /bin/bash -l -c "gem install bundler"
 
+# Required for GitHub Deploy Key
 RUN mkdir -p /home/deploy/.ssh
 
 COPY ./container_scripts/get-gateway /home/deploy/get-gateway

@@ -21,7 +21,7 @@ sudo docker \
   -d \
   --rm \
   -p "$GATEWAY_HOST_PORT":80 \
-  -v "$PWD/config/nginx.conf:/etc/nginx/conf.d/default.conf" \
+  -v "$PWD/config/nginx.docker.template.conf:/etc/nginx/conf.d/default.conf" \
   -v "$PWD/mount_dirs/gateway/:/gateway" \
   nginx
 

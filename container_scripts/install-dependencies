@@ -12,7 +12,6 @@ set -a
 
 cd /home/deploy/gateway/
 
-bundle update bootstrap3-datetimepicker-rails
 bundle install --without test development --full-index
 
 # Copy the dependencies files to the host
