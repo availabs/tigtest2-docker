@@ -55,8 +55,8 @@ else
 fi
 
 # Clone the gateway repo.
-# Noninteractive because using deployment key rather than password.
-git clone git@github.com:availabs/tigtest2.git gateway
+# Noninteractive if using deployment key rather than password.
+git clone "$GATEWAY_GITHUB_REPO" gateway
 
 cd /home/deploy/gateway/
 
