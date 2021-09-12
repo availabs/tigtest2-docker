@@ -25,5 +25,6 @@ sudo docker \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \
     -v "$PWD/dev-environment/gateway-tests":/home/deploy/gateway-tests \
+    -v "$PWD/dev-environment/gateway-tests/gateway_ruby_spec.rb":/home/deploy/gateway/spec/gateway_ruby_spec.rb \
     "${GATEWAY_DOCKER_IMG}-dev-environment" \
     bash -l
