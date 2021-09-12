@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" > /dev/null
+
+./node_modules/.bin/ts-node \
+  ./node_modules/.bin/tape \
+  src/**/*.spec.* \
+  | ./node_modules/.bin/tap-spec
+
+popd >/dev/null
