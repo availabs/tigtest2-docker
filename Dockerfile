@@ -5,6 +5,10 @@
 # Ubuntu 18.04 is required to install Ruby 2.2.0
 #   because of dependency on libssl1.0-dev
 
+# Once Ruby version at 2.4.0, switch to debian:10.10
+#   https://stackoverflow.com/a/42736129/3970755
+#   https://rvm_io.global.ssl.fastly.net/binaries/debian/10/x86_64/
+
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND="noninteractive" 

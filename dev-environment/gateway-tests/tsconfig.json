@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "CommonJS",
+    "declaration": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
