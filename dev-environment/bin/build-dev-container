@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#!/bin/bash
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
+
+source ../config/.env
+
+sudo docker \
+  build \
+    --build-arg GATEWAY_DOCKER_IMG="$GATEWAY_DOCKER_IMG" \
+    . \
+    --tag "${GATEWAY_DOCKER_IMG}-dev-environment"
+
+popd >/dev/null
