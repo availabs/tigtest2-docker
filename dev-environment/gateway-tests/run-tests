@@ -1,9 +1,46 @@
-#!/bin/bash
+#!/bin/bash -l
+
+PUMA_PID_FILE=/home/deploy/gateway/tmp/pids/puma.pid
 
 set -e
 
-pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" > /dev/null
+pushd /home/deploy/gateway &>/dev/null
 
-./node_modules/.bin/tap --ts src/**/*.spec.* &> /dev/null
+# If an instance of the TIG server is running, shut it down.
+if [ -f "$PUMA_PID_FILE" ]; then
+  echo 'Kill existing TIG server instance.'
 
-popd >/dev/null
+  kill $( cat "$PUMA_PID_FILE" )
+
+  # When the TIG server process ends, it removes the PUMA_PID_FILE.
+  while [ -f "$PUMA_PID_FILE" ]
+  do
+    echo 'wait...'
+    sleep 3
+  done
+fi
+
+echo 'Starting TIG server'
+
+# Start the TIG server in a background process
+bundle exec puma -C /home/deploy/gateway-tests/puma.bummr-tests.rb &
+
+# When the TIG server is running, the PUMA_PID_FILE is created.
+# Wait for that file before proceeding to the tests.
+while [ ! -f "$PUMA_PID_FILE" ]
+do
+  sleep 1
+done
+
+# Allow a bit of initialization time.
+sleep 5
+
+# Run the gateway-tests suite
+/home/deploy/gateway-tests/node_modules/.bin/tap \
+  --ts \
+  /home/deploy/gateway-tests/src/**/*.spec.*
+
+# Shutdown the server
+kill $( cat "$PUMA_PID_FILE" )
+
+popd &>/dev/null
