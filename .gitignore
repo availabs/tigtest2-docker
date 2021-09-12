@@ -1,1 +1,7 @@
 mount_dirs/
+*.bak
+*.tar
+*.tar.gz
+*.tgz
+*.tar.xz
+*.txz
