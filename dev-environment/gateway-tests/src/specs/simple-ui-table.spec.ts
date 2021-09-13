@@ -46,7 +46,7 @@ test("make API request", async function (t: Test) {
 
     log("done");
 
-    t.ok(numRows > 0, "NPMRDS table is empty");
+    t.ok(numRows > 0, "Data table is empty");
   } catch (err) {
     t.error(err);
   }
