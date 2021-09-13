@@ -2,7 +2,7 @@ import launchBrowser from "./utils/launchBrowser";
 
 import test, { Test } from "tape";
 
-const npmrdsViewUrl = "http://lor.availabs.org:8761/views/22/table";
+const npmrdsViewUrl = "http://localhost:3000/views/22/table";
 
 const tableRowsSelector = "#comparative_fact > tbody > tr";
 
