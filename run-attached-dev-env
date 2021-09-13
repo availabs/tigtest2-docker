@@ -13,9 +13,9 @@ then
   PGHOST_SOCKET="$PGHOST"
 fi
 
-    #--name nymtc_tig_gateway \
 sudo docker \
   run \
+    --name nymtc_tig_gateway_dev \
     -it \
     --rm \
     --log-driver none \
