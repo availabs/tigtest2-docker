@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND="noninteractive"
 
 USER root
 
-# Puppeter dependencies
+# Puppeter system dependencies
 RUN \
   apt-get -y install \
     libatk1.0-0 \
@@ -29,3 +29,5 @@ RUN \
     libxshmfence1
 
 USER deploy
+
+COPY ./container_scripts/install-dev-dependencies /home/deploy/install-dev-dependencies

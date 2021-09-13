@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" > /dev/null
+
+source ../../config/.env
+
+sudo docker \
+  run \
+    --rm \
+    --env-file "$PWD/../../config/.env" \
+    -v "$PWD/../../mount_dirs/gateway":/home/deploy/gateway \
+    -v "$PWD/../gateway-tests":/home/deploy/gateway-tests \
+    -v "$PWD/../../mount_dirs/.rvm":/home/deploy/.rvm \
+    -v "$PWD/../../mount_dirs/.gem":/home/deploy/.gem \
+    -v "$PWD/../../mount_dirs/.bundle":/home/deploy/.bundle \
+    "${GATEWAY_DOCKER_IMG}-dev-environment" \
+    ./install-dev-dependencies
+
+popd >/dev/null

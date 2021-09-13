@@ -1,0 +1,20 @@
+#!/bin/bash -l
+
+# This script will
+#
+#  0. The Docker container must be created with --env-file config/.env
+#
+#  1. Install all the app dependencies.
+#     These are installed in ~/.rvm, ~/.bundle, ~/.gem.
+
+set -e
+set -a
+
+cd /home/deploy
+
+# https://github.com/lpender/bummr#compatibility
+gem install bummr -v 0.6.0
+
+cd /home/deploy/gateway-tests
+
+npm install

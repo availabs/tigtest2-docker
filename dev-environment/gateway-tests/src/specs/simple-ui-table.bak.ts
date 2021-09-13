@@ -2,10 +2,9 @@ import launchBrowser from "./utils/launchBrowser";
 
 import test, { Test } from "tape";
 
-const npmrdsViewUrl =
-  "http://localhost:3000/views/19/table?utf8=%E2%9C%93&year=2016&month=1&day_of_week=1&vehicle_class=0&direction=&commit=Filter";
+const npmrdsViewUrl = "http://lor.availabs.org:8761/views/22/table";
 
-const tableRowsSelector = "#speed_fact > tbody > tr";
+const tableRowsSelector = "#comparative_fact > tbody > tr";
 
 const LOGGER_ON = false;
 
@@ -13,7 +12,8 @@ const FIVE_MIN = 5 * 60 * 1000;
 
 const log = LOGGER_ON ? (...args: any[]) => console.log(...args) : () => {};
 
-test("make API request", { timeout: FIVE_MIN }, async function (t: Test) {
+test("make API request", async function (t: Test) {
+  t.timeoutAfter(FIVE_MIN);
   try {
     log("creating browser");
     const browser = await launchBrowser();
@@ -27,7 +27,7 @@ test("make API request", { timeout: FIVE_MIN }, async function (t: Test) {
     await page.goto(npmrdsViewUrl);
 
     log("awaiting selector");
-    await page.waitForSelector(tableRowsSelector, { timeout: 50000 });
+    await page.waitForSelector(tableRowsSelector, { timeout: FIVE_MIN });
 
     const numRows = await page.evaluate((rowsSelector: string) => {
       const rows = Array.from(
@@ -48,7 +48,6 @@ test("make API request", { timeout: FIVE_MIN }, async function (t: Test) {
 
     t.ok(numRows > 0, "NPMRDS table is empty");
   } catch (err) {
-    console.error(err);
-    t.ok(false);
+    t.error(err);
   }
 });
