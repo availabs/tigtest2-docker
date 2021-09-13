@@ -20,7 +20,7 @@ sudo docker \
     --rm \
     --log-driver none \
     --env-file ./config/.env \
-    -v "$PGHOST_SOCKET":"$PGHOST_SOCKET" \
+    ${PGHOST_SOCKET:+-v "$PGHOST_SOCKET":"$PGHOST_SOCKET"} \
     -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \

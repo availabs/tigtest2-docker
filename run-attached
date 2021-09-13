@@ -13,18 +13,15 @@ then
   PGHOST_SOCKET="$PGHOST"
 fi
 
-    #--name nymtc_tig_gateway \
 sudo docker \
   run \
+    --name nymtc_tig_gateway \
     -it \
     --rm \
     --log-driver none \
     --env-file ./config/.env \
-    -v "$PGHOST_SOCKET":"$PGHOST_SOCKET" \
     -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
     -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \
     "$GATEWAY_DOCKER_IMG" \
     bash -l
-
-
