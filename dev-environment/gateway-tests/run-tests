@@ -10,12 +10,21 @@ pushd /home/deploy/gateway &>/dev/null
 if [ -f "$PUMA_PID_FILE" ]; then
   echo 'Kill existing TIG server instance.'
 
+  counter=0
   if kill $( cat "$PUMA_PID_FILE" );
   then
     # When the TIG server process ends, it removes the PUMA_PID_FILE.
     while [ -f "$PUMA_PID_FILE" ]
     do
       sleep 1
+
+      counter=$((counter++))
+
+      # after 10 iterations, break the loop
+      if [[ $counter -eq 10 ]];
+      then
+        break
+      fi
     done
   fi
 
@@ -25,6 +34,7 @@ fi
 echo 'Starting TIG server'
 
 # Start the TIG server in a background process
+rake assets:precompile
 bundle exec puma -C /home/deploy/gateway-tests/puma.bummr-tests.rb &
 
 # When the TIG server is running, the PUMA_PID_FILE is created.
