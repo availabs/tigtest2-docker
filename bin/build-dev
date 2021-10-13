@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+pushd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." > /dev/null
+
+source config/.env
+
+# --no-cache 
+sudo docker build --target tig-docker-dev -t "$GATEWAY_DOCKER_IMG" .
+
+popd >/dev/null

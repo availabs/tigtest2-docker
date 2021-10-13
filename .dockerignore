@@ -1,1 +1,8 @@
 mount_dirs/
+
+!mount_dirs/gateway/.ruby-version
+!mount_dirs/gateway/.ruby-gemset
+!mount_dirs/gateway/Gemfile
+!mount_dirs/gateway/Gemfile.lock
+!mount_dirs/gateway/.bundle
+

@@ -26,9 +26,6 @@ sudo docker \
     --env-file "$PWD/config/.env" \
     -v "$PGHOST_SOCKET":"$PGHOST_SOCKET" \
     -v "$PWD/mount_dirs/gateway":/home/deploy/gateway \
-    -v "$PWD/mount_dirs/.rvm":/home/deploy/.rvm \
-    -v "$PWD/mount_dirs/.gem":/home/deploy/.gem \
-    -v "$PWD/mount_dirs/.bundle":/home/deploy/.bundle \
     "$GATEWAY_DOCKER_IMG" \
     ./configure-gateway
 

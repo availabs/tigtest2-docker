@@ -116,3 +116,7 @@ It MUST NEVER be committed to the GitHub repository.
 The _config/.env.template_ is provided for users create a _config/.env_ file.
 Because _config/.env.template_ must be included in this repository,
 **config/.env.template MUST NEVER include any secrets**.
+
+## Resources
+
+- [Best practices when writing a Dockerfile for a Ruby application](https://lipanski.com/posts/dockerfile-ruby-best-practices)
